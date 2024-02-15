@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from '../Places/Home';
 import Heart from "../Hearts/Heart";
+import Valentines from "../Hearts/Valentines";
 import Games from "../Games/Games";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
@@ -25,8 +26,8 @@ function App() {
         <Tab eventKey="profile" title="Games">
           <Games />
         </Tab>
-        <Tab eventKey="contact" title="">
-          <Heart />
+        <Tab eventKey="contact" title="Valentines">
+          <Valentines />
         </Tab>
       </Tabs>
       {/* <BrowserRouter>

@@ -4,7 +4,7 @@ import './Games.css';
 function Games() {
   const [context, setContext] = useState();
   const [canvas, setCanvas] = useState();
-
+  let numberSequence = useRef(5);
   const tetrominos = {
     'I': [
       [0,0,0,0],
@@ -43,6 +43,47 @@ function Games() {
     ]
   };
 
+  // const tetrominos = {
+  //   'I': [
+  //     [0,1,1,1,0],
+  //     [0,0,1,0,0],
+  //     [0,0,1,0,0],
+  //     [0,1,1,1,0]
+  //   ],
+  //   'L': [
+  //     [0,1,0,0,0],
+  //     [0,1,0,0,0],
+  //     [0,1,0,0,0],
+  //     [0,1,1,1,0]
+  //   ],
+  //   'O': [
+  //     [0,0,0,0,0],
+  //     [0,1,1,1,0],
+  //     [0,1,0,1,0],
+  //     [0,1,1,1,0],
+  //   ],
+  //   'V': [
+  //     [0,0,0,0,0],
+  //     [1,0,0,0,1],
+  //     [0,1,0,1,0],
+  //     [0,0,1,0,0]
+  //   ],
+  //   'E': [
+  //     [0,1,1,1,0],
+  //     [0,1,0,0,0],
+  //     [0,1,1,1,0],
+  //     [0,1,0,0,0],
+  //     [0,1,1,1,0],
+  //   ],
+  //   'U': [
+  //     [0,0,0,0,0],
+  //     [0,1,0,1,0],
+  //     [0,1,0,1,0],
+  //     [0,1,1,1,0],
+  //   ],
+
+  // };
+
   const colors = {
     'I': 'cyan',
     'O': 'yellow',
@@ -54,6 +95,8 @@ function Games() {
   };
 
   let count = 0;
+  const rowGrid = 20;
+  const colGrid = 10;
   const grid = 32;
   const tetrominoSequence = [];
   const playfield = useRef([]);
@@ -70,7 +113,7 @@ function Games() {
 
   const generateSequence = () => {
     const sequence = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-  
+
     while (sequence.length) {
       const rand = getRandomInt(0, sequence.length - 1);
       const name = sequence.splice(rand, 1)[0];
@@ -79,12 +122,11 @@ function Games() {
   }
 
   const getNextTetromino = () => {
-    console.log(tetrominoSequence)
     if (tetrominoSequence.length === 0) {
       generateSequence();
     }
-  
-    var playfieldCol = 0;
+
+    var playfieldCol = 2;
     const name = tetrominoSequence.pop();
     const matrix = tetrominos[name];
   
@@ -95,7 +137,7 @@ function Games() {
     
     // I starts on row 21 (-1), all others start on row 22 (-2)
     const row = name === 'I' ? -1 : -2;
-  
+
     return {
       name: name,      // name of the piece (L, O, etc.)
       matrix: matrix,  // the current rotation matrix
@@ -152,10 +194,10 @@ function Games() {
         }
       });
       // populate the empty state
-      for (let row = -2; row < 20; row++) {
+      for (let row = -2; row < rowGrid; row++) {
         playfield.current[row] = [];
 
-        for (let col = 0; col < 10; col++) {
+        for (let col = 0; col < colGrid; col++) {
           playfield.current[row][col] = 0;
         }
       }
@@ -198,10 +240,11 @@ function Games() {
       for (let col = 0; col < tetromino.current.matrix[row].length; col++) {
         if (tetromino.current.matrix[row][col]) {
   
-          // game over if piece has any part offscreen
+          //game over if piece has any part offscreen
           if (tetromino.current.row + row < 0) {
             return showGameOver();
           }
+
           playfield.current[tetromino.current.row + row][tetromino.current.col + col] = tetromino.current.name;
         }
       }
@@ -248,12 +291,12 @@ function Games() {
     context.clearRect(0,0,canvas.width,canvas.height);
 
     // // draw the playfield.current
-    for (let row = 0; row < 20; row++) {
-      for (let col = 0; col < 10; col++) {
+    for (let row = 0; row < rowGrid; row++) {
+      for (let col = 0; col < colGrid; col++) {
         if (playfield.current[row][col]) {
           const name = playfield.current[row][col];
           context.fillStyle = colors[name];
-
+  
           // drawing 1 px smaller than the grid creates a grid effect
           context.fillRect(col * grid, row * grid, grid-1, grid-1);
         }
@@ -263,7 +306,6 @@ function Games() {
  
     // draw the active tetromino
     if (tetromino.current) {
-
       // tetromino falls every 35 frames
       if (++count > 10) {
         tetromino.current.row++;
@@ -277,7 +319,6 @@ function Games() {
       }
 
       context.fillStyle = colors[tetromino.current.name];
-
       for (let row = 0; row < tetromino.current.matrix.length; row++) {
         for (let col = 0; col < tetromino.current.matrix[row].length; col++) {
           if (tetromino.current.matrix[row][col]) {
@@ -293,9 +334,10 @@ function Games() {
 
   
   return (
-    <>
-      <canvas width="320" height="640" id="game"></canvas>
-    </>
+    <div style={{textAlign:'center', width: '50%', margin:'auto'}}>
+      <canvas style={{border:'5px solid black'}} width="320" height="640" id="game"></canvas>
+    </div>
+   
   );
 }
 
